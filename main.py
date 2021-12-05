@@ -1,0 +1,56 @@
+import numpy
+import random
+
+mouse = 2
+#tabla goala = 0
+#iesire = 1
+#mouse = 2
+#blocat = 3
+class Game:
+
+    def __init__(self,p1,p2):
+        self.Tabla = numpy.zeros((13, 13))
+        for i in range(13):
+            self.Tabla[0][i] = 1
+            self.Tabla[12][i] = 1
+            self.Tabla[i][0] = 1
+            self.Tabla[i][12] = 1
+        self.Mouse_On_Board(p1,p2)
+        print('********************')
+        p1,p2 = self.Possible_Moves(p1,p2)
+        print('********************')
+        p1,p2 = self.Possible_Moves(p1, p2)
+
+    def Mouse_On_Board(self, p1, p2):
+        self.Tabla[p1][p2] = mouse
+        print(self.Tabla)
+        return p1,p2
+
+    def Possible_Moves(self,p1,p2):
+        self.Tabla[p1][p2] = 0
+        r = random.randint(1,6)
+        j = p1
+        i = p2
+        if r == 1:
+            p1 = j - 1
+            p2 = i
+        if r == 2:
+            p1 = j - 1
+            p2 = i + 1
+        if r == 3:
+            p1 = j
+            p2 = i - 1
+        if r == 4:
+            p1 = j
+            p2 = i + 1
+        if r == 5:
+            p1 = j + 1
+            p2 = i
+        if r == 6:
+            p1 = j + 1
+            p2 = i + 1
+        print(r)
+        return self.Mouse_On_Board(p1,p2)
+
+if __name__ == '__main__':
+    game=Game(6,6)
