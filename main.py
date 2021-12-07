@@ -18,8 +18,10 @@ class Game:
         self.Spawn_Blocks()
         self.Mouse_On_Board(p1,p2)
         print('****************************************')
+        self.Generate_Blocks()
         p1,p2 = self.Possible_Moves(p1,p2)
         print('****************************************')
+        self.Generate_Blocks()
         p1,p2 = self.Possible_Moves(p1, p2)
 
     def Mouse_On_Board(self, p1, p2):
@@ -62,6 +64,15 @@ class Game:
             p = random.randint(1, 12)
         for i in range(x):
             self.Tabla[r[i]][p[i]] = block;
+
+    def Generate_Blocks(self):
+        a = int(input("Randul : "))
+        b = int(input("Coloana : "))
+        if (self.Tabla[a][b] == mouse) or (self.Tabla[a][b] == block) or (a>12) or (a<1) or (b>12) or (b<1):
+            print("Imposibila aceasta miscare, incercati alte valori ")
+            a = int(input("Randul : "))
+            b = int(input("Coloana : "))
+        self.Tabla[a][b] = block
 
 if __name__ == '__main__':
     game=Game(6,6)
