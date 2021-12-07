@@ -1,6 +1,6 @@
 import numpy
 import random
-
+block = 3
 mouse = 2
 #tabla goala = 0
 #iesire = 1
@@ -15,10 +15,11 @@ class Game:
             self.Tabla[12][i] = 1
             self.Tabla[i][0] = 1
             self.Tabla[i][12] = 1
+        self.Spawn_Blocks()
         self.Mouse_On_Board(p1,p2)
-        print('********************')
+        print('****************************************')
         p1,p2 = self.Possible_Moves(p1,p2)
-        print('********************')
+        print('****************************************')
         p1,p2 = self.Possible_Moves(p1, p2)
 
     def Mouse_On_Board(self, p1, p2):
@@ -51,6 +52,16 @@ class Game:
             p2 = i + 1
         print(r)
         return self.Mouse_On_Board(p1,p2)
+
+    def Spawn_Blocks(self):
+        x=5;
+        r = random.sample(range(1, 12), x)
+        p = random.sample(range(1, 12), x)
+        if (r == 6) and (p == 6):
+            r = random.randint(1, 12)
+            p = random.randint(1, 12)
+        for i in range(x):
+            self.Tabla[r[i]][p[i]] = block;
 
 if __name__ == '__main__':
     game=Game(6,6)
