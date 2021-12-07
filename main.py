@@ -1,7 +1,9 @@
 import numpy
 import random
+import sys
 block = 3
 mouse = 2
+out = 1
 #tabla goala = 0
 #iesire = 1
 #mouse = 2
@@ -11,10 +13,10 @@ class Game:
     def __init__(self,p1,p2):
         self.Tabla = numpy.zeros((13, 13))
         for i in range(13):
-            self.Tabla[0][i] = 1
-            self.Tabla[12][i] = 1
-            self.Tabla[i][0] = 1
-            self.Tabla[i][12] = 1
+            self.Tabla[0][i] = out
+            self.Tabla[12][i] = out
+            self.Tabla[i][0] = out
+            self.Tabla[i][12] = out
         self.Spawn_Blocks()
         self.Mouse_On_Board(p1,p2)
         print('****************************************')
@@ -34,6 +36,42 @@ class Game:
         r = random.randint(1,6)
         j = p1
         i = p2
+        if  (out == j - 1) or (out == i):
+            p1 = j - 1
+            p2 = i
+            print("The Mouse escaped the TRAP !")
+            #return self.Mouse_On_Board(p1, p2)
+            exit()
+        if (out == j - 1) or (out == i + 1):
+            p1 = j - 1
+            p2 = i + 1
+            #return self.Mouse_On_Board(p1, p2)
+            print("The Mouse escaped the TRAP !")
+            exit()
+        if (out == j) or (out == i - 1):
+            p1 = j
+            p2 = i - 1
+            #return self.Mouse_On_Board(p1, p2)
+            print("The Mouse escaped the TRAP !")
+            exit()
+        if (out == j) or (out == i + 1):
+            p1 = j
+            p2 = i + 1
+            #return self.Mouse_On_Board(p1, p2)
+            print("The Mouse escaped the TRAP !")
+            exit()
+        if (out == j + 1) or (out == i):
+            p1 = j + 1
+            p2 = i
+            #return self.Mouse_On_Board(p1, p2)
+            print("The Mouse escaped the TRAP !")
+            exit()
+        if (out == j + 1) or (out == i + 1):
+            p1 = j + 1
+            p2 = i + 1
+            #return self.Mouse_On_Board(p1, p2)
+            print("The Mouse escaped the TRAP !")
+            exit()
         if r == 1:
             p1 = j - 1
             p2 = i
