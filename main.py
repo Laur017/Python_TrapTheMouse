@@ -36,40 +36,24 @@ class Game:
         r = random.randint(1,6)
         j = p1
         i = p2
-        if  (out == j - 1) or (out == i):
-            p1 = j - 1
-            p2 = i
-            print("The Mouse escaped the TRAP !")
-            #return self.Mouse_On_Board(p1, p2)
-            exit()
-        if (out == j - 1) or (out == i + 1):
-            p1 = j - 1
-            p2 = i + 1
-            #return self.Mouse_On_Board(p1, p2)
+        #if (self.Mouse_On_Board(j - 1,i) == block) and self.Mouse_On_Board(j - 1,i + 1) == out self.Mouse_On_Board(j,i - 1) == out self.Mouse_On_Board(j,i + 1) == out self.Mouse_On_Board(j + 1,i) == out self.Mouse_On_Board(j + 1,i + 1) == out:
+
+        if  self.Mouse_On_Board(j - 1,i) == out:
             print("The Mouse escaped the TRAP !")
             exit()
-        if (out == j) or (out == i - 1):
-            p1 = j
-            p2 = i - 1
-            #return self.Mouse_On_Board(p1, p2)
+        if self.Mouse_On_Board(j - 1,i + 1) == out:
             print("The Mouse escaped the TRAP !")
             exit()
-        if (out == j) or (out == i + 1):
-            p1 = j
-            p2 = i + 1
-            #return self.Mouse_On_Board(p1, p2)
+        if self.Mouse_On_Board(j,i - 1) == out:
             print("The Mouse escaped the TRAP !")
             exit()
-        if (out == j + 1) or (out == i):
-            p1 = j + 1
-            p2 = i
-            #return self.Mouse_On_Board(p1, p2)
+        if self.Mouse_On_Board(j,i + 1) == out:
             print("The Mouse escaped the TRAP !")
             exit()
-        if (out == j + 1) or (out == i + 1):
-            p1 = j + 1
-            p2 = i + 1
-            #return self.Mouse_On_Board(p1, p2)
+        if self.Mouse_On_Board(j + 1,i) == out:
+            print("The Mouse escaped the TRAP !")
+            exit()
+        if self.Mouse_On_Board(j + 1,i + 1) == out:
             print("The Mouse escaped the TRAP !")
             exit()
         if r == 1:
