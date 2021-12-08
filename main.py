@@ -21,6 +21,7 @@ class Game:
         self.Mouse_On_Board(p1,p2)
         print('****************************************')
         self.Generate_Blocks()
+        #self.Verify_If_Win_Mouse(p1,p2)
         p1,p2 = self.Possible_Moves(p1,p2)
         print('****************************************')
         self.Generate_Blocks()
@@ -31,61 +32,80 @@ class Game:
         print(self.Tabla)
         return p1,p2
 
-    def Possible_Moves(self,p1,p2):
-        self.Tabla[p1][p2] = 0
-        r = random.randint(1,6)
+    def Verify_If_Win_Mouse(self, p1, p2):
         j = p1
         i = p2
-        #if (self.Mouse_On_Board(j - 1,i) == block) and self.Mouse_On_Board(j - 1,i + 1) == out self.Mouse_On_Board(j,i - 1) == out self.Mouse_On_Board(j,i + 1) == out self.Mouse_On_Board(j + 1,i) == out self.Mouse_On_Board(j + 1,i + 1) == out:
+        if self.Mouse_On_Board(j - 1, i) == out:
+            print("The Mouse escaped the TRAP !")
+            exit()
+        if self.Mouse_On_Board(j - 1, i + 1) == out:
+            print("The Mouse escaped the TRAP !")
+            exit()
+        if self.Mouse_On_Board(j, i - 1) == out:
+            print("The Mouse escaped the TRAP !")
+            exit()
+        if self.Mouse_On_Board(j, i + 1) == out:
+            print("The Mouse escaped the TRAP !")
+            exit()
+        if self.Mouse_On_Board(j + 1, i) == out:
+            print("The Mouse escaped the TRAP !")
+            exit()
+        if self.Mouse_On_Board(j + 1, i + 1) == out:
+            print("The Mouse escaped the TRAP !")
+            exit()
 
-        if  self.Mouse_On_Board(j - 1,i) == out:
-            print("The Mouse escaped the TRAP !")
+    def Possible_Moves(self,p1,p2):
+        j = p1
+        i = p2
+        self.Tabla[p1][p2] = 0
+        lista = [1,2,3,4,5,6]
+        if self.Mouse_On_Board(j - 1, i) == block:
+            lista.pop(0)
+        if self.Mouse_On_Board(j - 1, i + 1) == block:
+            lista.pop(1)
+        if self.Mouse_On_Board(j, i - 1) == block:
+            lista.pop(2)
+        if self.Mouse_On_Board(j, i + 1) == block:
+            lista.pop(3)
+        if self.Mouse_On_Board(j + 1, i) == block:
+            lista.pop(4)
+        if self.Mouse_On_Board(j + 1, i + 1) == block:
+            lista.pop(5)
+        if len(lista)<1:
+            print("Congratulations, you trapped the mouse ! ")
             exit()
-        if self.Mouse_On_Board(j - 1,i + 1) == out:
-            print("The Mouse escaped the TRAP !")
-            exit()
-        if self.Mouse_On_Board(j,i - 1) == out:
-            print("The Mouse escaped the TRAP !")
-            exit()
-        if self.Mouse_On_Board(j,i + 1) == out:
-            print("The Mouse escaped the TRAP !")
-            exit()
-        if self.Mouse_On_Board(j + 1,i) == out:
-            print("The Mouse escaped the TRAP !")
-            exit()
-        if self.Mouse_On_Board(j + 1,i + 1) == out:
-            print("The Mouse escaped the TRAP !")
-            exit()
-        if r == 1:
-            p1 = j - 1
-            p2 = i
-        if r == 2:
-            p1 = j - 1
-            p2 = i + 1
-        if r == 3:
-            p1 = j
-            p2 = i - 1
-        if r == 4:
-            p1 = j
-            p2 = i + 1
-        if r == 5:
-            p1 = j + 1
-            p2 = i
-        if r == 6:
-            p1 = j + 1
-            p2 = i + 1
-        print(r)
+        else:
+            r = random.choice(lista)
+            if r == 1:
+                p1 = j - 1
+                p2 = i
+            if r == 2:
+                p1 = j - 1
+                p2 = i + 1
+            if r == 3:
+                p1 = j
+                p2 = i - 1
+            if r == 4:
+                p1 = j
+                p2 = i + 1
+            if r == 5:
+                p1 = j + 1
+                p2 = i
+            if r == 6:
+                p1 = j + 1
+                p2 = i + 1
+            print(r)
         return self.Mouse_On_Board(p1,p2)
 
     def Spawn_Blocks(self):
-        x=5;
+        x=5
         r = random.sample(range(1, 12), x)
         p = random.sample(range(1, 12), x)
         if (r == 6) and (p == 6):
             r = random.randint(1, 12)
             p = random.randint(1, 12)
         for i in range(x):
-            self.Tabla[r[i]][p[i]] = block;
+            self.Tabla[r[i]][p[i]] = block
 
     def Generate_Blocks(self):
         a = int(input("Randul : "))
