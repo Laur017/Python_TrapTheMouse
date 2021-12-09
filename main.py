@@ -61,17 +61,17 @@ class Game:
         self.Tabla[p1][p2] = 0
         lista = [1, 2, 3, 4, 5, 6]
         if self.Tabla[j - 1][i] == block:
-            lista.pop(0)
+            lista.remove(1)
         if self.Tabla[j - 1][i + 1] == block:
-            lista.pop(1)
+            lista.remove(2)
         if self.Tabla[j][i - 1] == block:
-            lista.pop(2)
+            lista.remove(3)
         if self.Tabla[j][i + 1] == block:
-            lista.pop(3)
+            lista.remove(4)
         if self.Tabla[j + 1][i] == block:
-            lista.pop(4)
+            lista.remove(5)
         if self.Tabla[j + 1][i + 1] == block:
-            lista.pop(5)
+            lista.remove(6)
         if len(lista) < 1:
             print("Congratulations, you trapped the mouse ! ")
             exit()
