@@ -1,5 +1,6 @@
 import numpy
 import random
+import os
 import sys
 block = 3
 mouse = 2
@@ -12,14 +13,15 @@ out = 1
 
 class Game:
 
-    def __init__(self, p1, p2):
+    def __init__(self, x):
+        p1, p2 = 6, 6
         self.Tabla = numpy.zeros((13, 13))
         for i in range(13):
             self.Tabla[0][i] = out
             self.Tabla[12][i] = out
             self.Tabla[i][0] = out
             self.Tabla[i][12] = out
-        self.Spawn_Blocks()
+        self.Spawn_Blocks(x)
         self.Mouse_On_Board(p1, p2)
         while(1):
             print('****************************************')
@@ -101,8 +103,7 @@ class Game:
         # print(self.Tabla)
         # return p1, p2
 
-    def Spawn_Blocks(self):
-        x = 5
+    def Spawn_Blocks(self, x):
         r = random.sample(range(1, 12), x)
         p = random.sample(range(1, 12), x)
         if (r == 6) and (p == 6):
@@ -122,4 +123,39 @@ class Game:
 
 
 if __name__ == '__main__':
-    game = Game(6, 6)
+    print("********** TRAP THE MOUSE **********")
+    print()
+    print("1. PLAY")
+    print("2. EXIT")
+    print()
+    print("************************************")
+    print()
+    joc = int(input("Selecteaza actiunea dorita selectand nr. actiunii : "))
+    if joc == 1:
+        os.system('cls')
+        print("********** TRAP THE MOUSE **********")
+        print()
+        print("Selecteaza dificultatea de joc ")
+        print()
+        print("1. EASY")
+        print("2. MEDIUM")
+        print("3. HARD")
+        print("4. <---")
+        print()
+        print("************************************")
+        print()
+        dific = int(input("Selecteaza actiunea dorita selectand nr. actiunii : "))
+    elif joc == 2:
+        exit()
+    else:
+        print("Comanda incorecta")
+    if dific == 1:
+        pp = 8
+    elif dific == 2:
+        pp = 5
+    elif dific == 3:
+        pp = 2
+    else:
+        print("Comanda incorecta")
+    os.system('cls')
+    game = Game(pp)
