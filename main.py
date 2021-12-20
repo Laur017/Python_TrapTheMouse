@@ -10,8 +10,8 @@ SCREEN_WIDTH = 750
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption('Trap The Mouse')
 
-start_img = pygame.image.load('start_btn.png').convert_alpha()
-quit_img = pygame.image.load('quit_btn.png').convert_alpha()
+start_img = pygame.image.load('img/start_btn.png').convert_alpha()
+quit_img = pygame.image.load('img/quit_btn.png').convert_alpha()
 
 class Button():
     def __init__(self,x,y,image, scale):
