@@ -12,7 +12,10 @@ pygame.display.set_caption('Trap The Mouse')
 
 start_img = pygame.image.load('img/start_btn.png').convert_alpha()
 quit_img = pygame.image.load('img/quit_btn.png').convert_alpha()
-
+easy_img = pygame.image.load('img/easy_btn.png').convert_alpha()
+medium_img = pygame.image.load('img/medium_btn.png').convert_alpha()
+hard_img = pygame.image.load('img/hard_btn.png').convert_alpha()
+pvsp_img = pygame.image.load('img/pvsp_btn.png').convert_alpha()
 class Button():
     def __init__(self,x,y,image, scale):
         width = image.get_width()
@@ -37,9 +40,12 @@ class Button():
 
         screen.blit(self.image, (self.rect.x, self.rect.y))
         return action
-start_button = Button(100,200,start_img, 0.5)
-quit_button = Button(450,200,quit_img, 0.5)
-
+start_button = Button(SCREEN_WIDTH / 2 -50,300,start_img, 0.5)
+quit_button = Button(SCREEN_WIDTH / 2 -50,400,quit_img, 0.5)
+easy_button = Button(SCREEN_WIDTH / 2 -50,100,easy_img, 0.5)
+medium_button = Button(SCREEN_WIDTH / 2 -50,200,medium_img, 0.5)
+hard_button = Button(SCREEN_WIDTH / 2 -50,300,hard_img, 0.5)
+pvsp_button = Button(SCREEN_WIDTH / 2 -50,400,pvsp_img, 0.5)
 
 block = 3
 mouse = 2
@@ -161,13 +167,12 @@ class Game:
             b = int(input("Coloana : "))
         self.Tabla[a][b] = block
 
-
-if __name__ == '__main__':
+def main_menu():
     run = True
     while run:
         screen.fill((144, 238, 144))
         if start_button.draw():
-            print("Start")
+            start()
         if quit_button.draw():
             run = False
         for event in pygame.event.get():
@@ -176,3 +181,24 @@ if __name__ == '__main__':
         pygame.display.update()
 
     pygame.quit()
+
+def start():
+    running = True
+    while running:
+        screen.fill((144, 238, 144))
+        if easy_button.draw():
+            print("Easy")
+        if medium_button.draw():
+            print("med")
+        if hard_button.draw():
+            print("hard")
+        if pvsp_button.draw():
+            print("pvp")
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+
+        pygame.display.update()
+
+if __name__ == '__main__':
+    main_menu()
