@@ -45,16 +45,19 @@ class TTM:
         self.initColors()
         self.initScreen()
         self.initButtons()
+        self.initImages()
         self.initTable()
+        pg.font.init()
         self.game()
 
     def initColors(self) -> None:
-        self.background = (144, 238, 144)
+        self.backgroundColor = (144, 238, 144)
+        self.textColor = (10, 10, 10)
 
     def initScreen(self) -> None:
         pg.display.set_caption('Trap the Mouse')
         self.screen = pg.display.set_mode((800, 800))
-        self.screen.fill(self.background)
+        self.screen.fill(self.backgroundColor)
         pg.display.update()
 
     def initButtons(self) -> None:
@@ -69,6 +72,14 @@ class TTM:
         self.hard_button = Button(width, 400, 0.5, hard_img, self.screen)
         pvp_img = pg.image.load("img/pvsp_btn.png").convert_alpha()
         self.pvp_button = Button(width, 500, 0.5, pvp_img, self.screen)
+        back_img = pg.image.load("img/back_btn.png").convert_alpha()
+        self.back_button = Button(0, 0, 0.5, back_img, self.screen)
+
+    def initImages(self) -> None:
+        self.free_hex = pg.image.load("img/green.png").convert_alpha()
+        self.mouse_hex = pg.image.load("img/red.png").convert_alpha()
+        self.block_hex = pg.image.load("img/brown.png").convert_alpha()
+        self.background_img = pg.image.load("img/sobolaur.png").convert()
 
     def initTable(self) -> None:
         self.table = list()
@@ -80,13 +91,9 @@ class TTM:
                 temp.append(Hex(matrix[i][j], i, j))
             self.table.append(temp)
 
-        self.free_hex = pg.image.load("img/green.png").convert_alpha()
-        self.mouse_hex = pg.image.load("img/red.png").convert_alpha()
-        self.block_hex = pg.image.load("img/brown.png").convert_alpha()
-
-        y = 150
+        y = 170
         for i in range(len(self.table)):
-            x = 150
+            x = 1170
             if i % 2 == 1:
                 x -= 19
             for j in range(len(self.table[i])):
@@ -141,12 +148,14 @@ class TTM:
         return matrix
 
     def drawMenu(self) -> None:
-        self.screen.fill(self.background)
+        self.screen.fill(self.backgroundColor)
+        self.screen.blit(self.background_img, (0, 0))
         self.start_button.draw()
         self.quit_button.draw()
 
     def drawDifficulty(self) -> None:
-        self.screen.fill(self.background)
+        self.screen.fill(self.backgroundColor)
+        self.screen.blit(self.background_img, (0, 0))
         self.easy_button.draw()
         self.hard_button.draw()
         self.pvp_button.draw()
@@ -159,28 +168,11 @@ class TTM:
             print(temp)
 
     def drawTable(self) -> None:
-        self.screen.fill(self.background)
+        self.screen.fill(self.backgroundColor)
+        self.screen.blit(self.background_img, (0, 0))
         for i in range(len(self.table)):
             for j in range(len(self.table[i])):
                 self.table[i][j].draw()
-
-    def getFreeSpacesBonk(self) -> list:
-        i = self.mouse[0]
-        j = self.mouse[1]
-        spaces = [1, 2, 3, 4, 5, 6]
-        if self.table[i - 1][j].type == 3:
-           spaces.remove(1)
-        if self.table[i - 1][j + 1].type == 3:
-            spaces.remove(2)
-        if self.table[i][j - 1].type == 3:
-            spaces.remove(3)
-        if self.table[i][j + 1].type == 3:
-            spaces.remove(4)
-        if self.table[i + 1][j].type == 3:
-            spaces.remove(5)
-        if self.table[i + 1][j + 1].type == 3:
-            spaces.remove(6)
-        return spaces
 
     def getFreeSpaces(self) -> list:
         i = self.mouse[0]
@@ -249,6 +241,15 @@ class TTM:
             return True
         return False
 
+    def drawWinScreen(self, text : str) -> None:
+        self.screen.fill(self.backgroundColor)
+        self.screen.blit(self.background_img, (0, 0))
+        font = pg.font.Font(None, 64)
+        textSurf = font.render(text, True, self.textColor)
+        textpos = textSurf.get_rect(centerx = self.screen.get_width() // 2, y = self.screen.get_height() // 2)
+        self.screen.blit(textSurf, textpos)
+        self.back_button.draw()
+
     def game(self) -> None:
         self.drawMenu()
         clock = pg.time.Clock()
@@ -257,6 +258,7 @@ class TTM:
         screen = 1
         redraw = False
         difficulty = 1
+        winnerText = 'PLACEHOLDER'
         while(True):
             for event in pg.event.get():
                 if event.type == pg.QUIT:
@@ -271,17 +273,14 @@ class TTM:
                                 redraw = True
                         elif(screen == 2):
                             if(pg.Rect.collidepoint(self.easy_button.rect, event.pos)):
-                                print('Easy')
                                 screen = 3
                                 difficulty = 1
                                 redraw = True
                             elif(pg.Rect.collidepoint(self.hard_button.rect, event.pos)):
-                                print('Hard')
                                 screen = 3
                                 difficulty = 2
                                 redraw = True
                             elif(pg.Rect.collidepoint(self.pvp_button.rect, event.pos)):
-                                print('PVP')
                                 screen = 3
                                 difficulty = 3
                                 redraw = True
@@ -292,32 +291,35 @@ class TTM:
                                 for j in range(len(self.table[i])):
                                     if(self.table[i][j].type == 0):
                                         if(pg.Rect.collidepoint(self.table[i][j].rect, event.pos)):
-                                                self.table[i][j].changeType(3, self.block_hex)
-                                                foundHex = True
-                                                freeSpaces = self.getFreeSpaces()
-                                                if(len(freeSpaces) == 0):
-                                                    print('Trapper Win')
+                                            foundHex = True
+                                            self.table[i][j].changeType(3, self.block_hex)
+                                            freeSpaces = self.getFreeSpaces()
+                                            if(len(freeSpaces) == 0):
+                                                self.drawWinScreen('Trapper Won!')
+                                                screen = 4
+                                                redraw = True
+                                                break
+                                            else:
+                                                if(difficulty == 1):
+                                                    self.moveMouseEasy(freeSpaces)
+                                                elif(difficulty == 2):
+                                                    print('Welp')
+                                                    exit()
+                                                elif(difficulty == 3):
+                                                    print('Welp2')
                                                     exit()
                                                 else:
-                                                    if(difficulty == 1):
-                                                        self.moveMouseEasy(freeSpaces)
-
-                                                    elif(difficulty == 2):
-                                                        print('Welp')
-                                                        exit()
-                                                    elif(difficulty == 3):
-                                                        print('Welp2')
-                                                        exit()
-                                                    else:
-                                                        print(f'Unknown difficulty {difficulty}')
-                                                        exit()
-
-                                                if(self.checkMouseWin()):
-                                                    print('Mouse Win')
+                                                    print(f'Unknown difficulty {difficulty}')
                                                     exit()
-                                                else:
-                                                    break
-
+                                            if(self.checkMouseWin()):
+                                                winnerText = 'Mouse Won!'
+                                                screen = 4
+                                                redraw = True
+                                            break
+                        elif(screen == 4):
+                            if(pg.Rect.collidepoint(self.back_button.rect, event.pos)):
+                                screen = 1
+                                redraw = True
 
                 if(redraw):
                     if(screen == 1):
@@ -326,6 +328,8 @@ class TTM:
                         self.drawDifficulty()
                     elif(screen == 3):
                         self.drawTable()
+                    elif(screen == 4):
+                        self.drawWinScreen(winnerText)
                     else:
                         print(f'Unknown screen type: {screen}')
                         exit()
