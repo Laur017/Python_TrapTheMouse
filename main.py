@@ -91,7 +91,7 @@ class TTM:
 
         y = 170
         for i in range(len(self.table)):
-            x = 170
+            x = 185
             if i % 2 == 1:
                 x -= 19
             for j in range(len(self.table[i])):
@@ -228,6 +228,40 @@ class TTM:
             self.mouse = [moveX, moveY]
             self.table[moveX][moveY].changeType(2, self.mouse_hex)
 
+    def moveMousePvP(self, freeSpaces : list, hex : Hex) -> bool:
+        i = self.mouse[0]
+        j = self.mouse[1]
+        hexI = hex.i
+        hexJ = hex.j
+        possible = False
+        for space in freeSpaces:
+            if space == 1:
+                if hexI == (i - 1) and hexJ == j:
+                    possible = True
+            elif space == 2:
+                if hexI == (i - 1) and hexJ == (j - 1):
+                    possible = True
+            elif space == 3:
+                if hexI == i and hexJ == (j + 1):
+                    possible = True
+            elif space == 4:
+                if hexI == (i + 1) and hexJ == (j - 1):
+                    possible = True
+            elif space == 5:
+                if hexI == (i + 1) and hexJ == j:
+                    possible = True
+            elif space == 6:
+                if hexI == i and hexJ == (j - 1):
+                    possible = True
+
+        if(possible):
+            self.mouse = [hexI, hexJ]
+            self.table[i][j].changeType(0, self.free_hex)
+            self.table[hexI][hexJ].changeType(2, self.mouse_hex)
+            return True
+        else:
+            return False
+
     def checkMouseWin(self) -> bool:
         i = self.mouse[0]
         j = self.mouse[1]
@@ -262,6 +296,7 @@ class TTM:
         screen = 1
         redraw = False
         difficulty = 1
+        player = 1
         winnerText = 'PLACEHOLDER'
         while(True):
             for event in pg.event.get():
@@ -296,8 +331,12 @@ class TTM:
                                     if(self.table[i][j].type == 0):
                                         if(pg.Rect.collidepoint(self.table[i][j].rect, event.pos)):
                                             foundHex = True
-                                            self.table[i][j].changeType(3, self.block_hex)
-                                            freeSpaces = self.getFreeSpaces()
+                                            print(i, j)
+                                            if(player == 1):
+                                                self.table[i][j].changeType(3, self.block_hex)
+                                                freeSpaces = self.getFreeSpaces()
+                                                if(difficulty == 3):
+                                                    player = 0
                                             if(len(freeSpaces) == 0):
                                                 self.drawWinScreen('Trapper Won!')
                                                 screen = 4
@@ -310,8 +349,19 @@ class TTM:
                                                     print('Welp')
                                                     exit()
                                                 elif(difficulty == 3):
-                                                    print('Welp2')
-                                                    exit()
+                                                    if(player == 2):
+                                                        print("Player 2")
+                                                        if(self.moveMousePvP(freeSpaces, self.table[i][j])):
+                                                            player = 1
+                                                        else:
+                                                            break
+                                                    elif(player == 0):
+                                                        print("Player 0")
+                                                        player = 2
+                                                        break
+                                                    else:
+                                                        print(f'Unknown player {player}')
+                                                        exit()
                                                 else:
                                                     print(f'Unknown difficulty {difficulty}')
                                                     exit()
@@ -336,6 +386,7 @@ class TTM:
                     elif(screen == 4):
                         self.drawWinScreen(winnerText)
                         self.resetTable()
+                        player = 1
                         winnerText = 'PLACEHOLDER'
                     else:
                         print(f'Unknown screen type: {screen}')
