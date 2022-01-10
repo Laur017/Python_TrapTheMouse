@@ -232,7 +232,7 @@ class TTM:
     def moveMouseHard(self) -> None:
         def bfs(grid : list, start : tuple) -> list:
             queue = deque([[start]])
-            seen = set([start])
+            seen = {start}
             while queue:
                 path = queue.popleft()
                 x, y = path[-1]
@@ -326,6 +326,7 @@ class TTM:
         difficulty = 1
         player = 1
         winnerText = 'PLACEHOLDER'
+        freeSpaces = None
         while(True):
             for event in pg.event.get():
                 if event.type == pg.QUIT:
@@ -365,7 +366,7 @@ class TTM:
                                                 if(difficulty == 3):
                                                     player = 0
                                             if(len(freeSpaces) == 0):
-                                                self.drawWinScreen('Trapper Won!')
+                                                winnerText = 'Trapper Won!'
                                                 screen = 4
                                                 redraw = True
                                                 break
@@ -376,13 +377,11 @@ class TTM:
                                                     self.moveMouseHard()
                                                 elif(difficulty == 3):
                                                     if(player == 2):
-                                                        print("Player 2")
                                                         if(self.moveMousePvP(freeSpaces, self.table[i][j])):
                                                             player = 1
                                                         else:
                                                             break
                                                     elif(player == 0):
-                                                        print("Player 0")
                                                         player = 2
                                                         break
                                                     else:
