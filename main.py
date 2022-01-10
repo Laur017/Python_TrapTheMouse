@@ -1,3 +1,4 @@
+from collections import deque
 import pygame as pg
 import random
 
@@ -182,17 +183,17 @@ class TTM:
         i = self.mouse[0]
         j = self.mouse[1]
         spaces = [1, 2, 3, 4, 5, 6]
-        if self.table[i - 1][j].type == 3: # Up - Left
+        if self.table[i - 1][j].type == 3:
             spaces.remove(1)
-        if self.table[i - 1][j - 1].type == 3: # Up - Right
+        if self.table[i - 1][j - 1].type == 3:
             spaces.remove(2)
-        if self.table[i][j + 1].type == 3: # Right
+        if self.table[i][j + 1].type == 3:
             spaces.remove(3)
-        if self.table[i + 1][j - 1].type == 3: # Down - Right
+        if self.table[i + 1][j - 1].type == 3:
             spaces.remove(4)
-        if self.table[i + 1][j].type == 3: # Down - Left
+        if self.table[i + 1][j].type == 3:
             spaces.remove(5)
-        if self.table[i][j - 1].type == 3: # Left
+        if self.table[i][j - 1].type == 3:
             spaces.remove(6)
         return spaces
 
@@ -227,6 +228,33 @@ class TTM:
         else:
             self.mouse = [moveX, moveY]
             self.table[moveX][moveY].changeType(2, self.mouse_hex)
+
+    def moveMouseHard(self) -> None:
+        def bfs(grid : list, start : tuple) -> list:
+            queue = deque([[start]])
+            seen = set([start])
+            while queue:
+                path = queue.popleft()
+                x, y = path[-1]
+                if grid[y][x] == '1':
+                    return path
+                for x2, y2 in ((x - 1 , y), (x - 1 , y - 1), (x , y - 1), (x, y + 1), (x + 1, y), (x + 1, y - 1)):
+                    if (0 <= x2 < 13 and 0 <= y2 < 13 and grid[y2][x2] != '3' and (x2, y2) not in seen):
+                        queue.append(path + [(x2, y2)])
+                        seen.add((x2, y2))
+                        # print(x2, y2)
+
+        grid = list()
+        for i in range(len(self.table)):
+            temp = str()
+            for j in range(len(self.table[i])):
+                temp += str(self.table[i][j].type)
+            grid.append(temp)
+
+        move = bfs(grid, (self.mouse[0], self.mouse[1]))[1]
+        self.table[self.mouse[0]][self.mouse[1]].changeType(0, self.free_hex)
+        self.mouse = [move[0], move[1]]
+        self.table[move[0]][move[1]].changeType(2, self.mouse_hex)
 
     def moveMousePvP(self, freeSpaces : list, hex : Hex) -> bool:
         i = self.mouse[0]
@@ -331,7 +359,6 @@ class TTM:
                                     if(self.table[i][j].type == 0):
                                         if(pg.Rect.collidepoint(self.table[i][j].rect, event.pos)):
                                             foundHex = True
-                                            print(i, j)
                                             if(player == 1):
                                                 self.table[i][j].changeType(3, self.block_hex)
                                                 freeSpaces = self.getFreeSpaces()
@@ -346,8 +373,7 @@ class TTM:
                                                 if(difficulty == 1):
                                                     self.moveMouseEasy(freeSpaces)
                                                 elif(difficulty == 2):
-                                                    print('Welp')
-                                                    exit()
+                                                    self.moveMouseHard()
                                                 elif(difficulty == 3):
                                                     if(player == 2):
                                                         print("Player 2")
@@ -384,6 +410,8 @@ class TTM:
                     elif(screen == 3):
                         self.drawTable()
                     elif(screen == 4):
+                        pg.display.update()
+                        pg.time.wait(1000)
                         self.drawWinScreen(winnerText)
                         self.resetTable()
                         player = 1
