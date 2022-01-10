@@ -1,8 +1,6 @@
 import pygame as pg
 import random
 
-
-
 class Hex:
     def __init__(self, type : int, i : int, j : int) -> None:
        self.type = type
@@ -73,7 +71,7 @@ class TTM:
         pvp_img = pg.image.load("img/pvsp_btn.png").convert_alpha()
         self.pvp_button = Button(width, 500, 0.5, pvp_img, self.screen)
         back_img = pg.image.load("img/back_btn.png").convert_alpha()
-        self.back_button = Button(0, 0, 0.5, back_img, self.screen)
+        self.back_button = Button(5, 20, 0.5, back_img, self.screen)
 
     def initImages(self) -> None:
         self.free_hex = pg.image.load("img/green.png").convert_alpha()
@@ -93,7 +91,7 @@ class TTM:
 
         y = 170
         for i in range(len(self.table)):
-            x = 1170
+            x = 170
             if i % 2 == 1:
                 x -= 19
             for j in range(len(self.table[i])):
@@ -173,6 +171,12 @@ class TTM:
         for i in range(len(self.table)):
             for j in range(len(self.table[i])):
                 self.table[i][j].draw()
+
+    def resetTable(self) -> None:
+        for i in self.table:
+            for j in i:
+                del(j)
+        self.initTable()
 
     def getFreeSpaces(self) -> list:
         i = self.mouse[0]
@@ -326,10 +330,13 @@ class TTM:
                         self.drawMenu()
                     elif(screen == 2):
                         self.drawDifficulty()
+                        difficulty = 1
                     elif(screen == 3):
                         self.drawTable()
                     elif(screen == 4):
                         self.drawWinScreen(winnerText)
+                        self.resetTable()
+                        winnerText = 'PLACEHOLDER'
                     else:
                         print(f'Unknown screen type: {screen}')
                         exit()
