@@ -20,6 +20,12 @@ class Hex:
         if(self.type != 1):
             self.screen.blit(self.surf, self.rect.topleft)
 
+    def changeType(self, type, image) -> None:
+        if(self.type != 1):
+            self.type = type
+            self.surf = image
+            self.draw()
+
 
 class Button:
     def __init__(self, x : int, y : int, scale : float, image : pg.Surface, screen : pg.Surface) -> None:
@@ -74,9 +80,9 @@ class TTM:
                 temp.append(Hex(matrix[i][j], i, j))
             self.table.append(temp)
 
-        free_hex = pg.image.load("img/green.png").convert_alpha()
-        mouse_hex = pg.image.load("img/red.png").convert_alpha()
-        block_hex = pg.image.load("img/brown.png").convert_alpha()
+        self.free_hex = pg.image.load("img/green.png").convert_alpha()
+        self.mouse_hex = pg.image.load("img/red.png").convert_alpha()
+        self.block_hex = pg.image.load("img/brown.png").convert_alpha()
 
         y = 150
         for i in range(len(self.table)):
@@ -88,11 +94,11 @@ class TTM:
 
                 img = None
                 if(self.table[i][j].type == 0):
-                    img = free_hex
+                    img = self.free_hex
                 elif(self.table[i][j].type == 3):
-                    img = block_hex
+                    img = self.block_hex
                 elif(self.table[i][j].type == 2):
-                    img = mouse_hex
+                    img = self.mouse_hex
                 else:
                     print(f'Unknown number: {self.table[i][j].type}')
                     exit()
@@ -119,7 +125,7 @@ class TTM:
 
         matrix = self.spawnBlocks(matrix, 6)
         matrix[6][6] = 2
-
+        self.mouse = [6, 6]
         return matrix
 
     def spawnBlocks(self, matrix : list, x : int) -> list:
@@ -158,6 +164,91 @@ class TTM:
             for j in range(len(self.table[i])):
                 self.table[i][j].draw()
 
+    def getFreeSpacesBonk(self) -> list:
+        i = self.mouse[0]
+        j = self.mouse[1]
+        spaces = [1, 2, 3, 4, 5, 6]
+        if self.table[i - 1][j].type == 3:
+           spaces.remove(1)
+        if self.table[i - 1][j + 1].type == 3:
+            spaces.remove(2)
+        if self.table[i][j - 1].type == 3:
+            spaces.remove(3)
+        if self.table[i][j + 1].type == 3:
+            spaces.remove(4)
+        if self.table[i + 1][j].type == 3:
+            spaces.remove(5)
+        if self.table[i + 1][j + 1].type == 3:
+            spaces.remove(6)
+        return spaces
+
+    def getFreeSpaces(self) -> list:
+        i = self.mouse[0]
+        j = self.mouse[1]
+        spaces = [1, 2, 3, 4, 5, 6]
+        if self.table[i - 1][j].type == 3: # Up - Left
+            spaces.remove(1)
+        if self.table[i - 1][j - 1].type == 3: # Up - Right
+            spaces.remove(2)
+        if self.table[i][j + 1].type == 3: # Right
+            spaces.remove(3)
+        if self.table[i + 1][j - 1].type == 3: # Down - Right
+            spaces.remove(4)
+        if self.table[i + 1][j].type == 3: # Down - Left
+            spaces.remove(5)
+        if self.table[i][j - 1].type == 3: # Left
+            spaces.remove(6)
+        return spaces
+
+    def moveMouseEasy(self, freeSpaces : list) -> None:
+        i = self.mouse[0]
+        j = self.mouse[1]
+        self.table[i][j].changeType(0, self.free_hex)
+        space = random.choice(freeSpaces)
+        moveX = -1
+        moveY = -1
+        if space == 1:
+            moveX = i - 1
+            moveY = j
+        if space == 2:
+            moveX = i - 1
+            moveY = j - 1
+        if space == 3:
+            moveX = i
+            moveY = j + 1
+        if space == 4:
+            moveX = i + 1
+            moveY = j - 1
+        if space == 5:
+            moveX = i + 1
+            moveY = j
+        if space == 6:
+            moveX = i
+            moveY = j - 1
+        if(moveX == -1 or moveY == -1):
+            print(f'Impossible mouse move')
+            exit()
+        else:
+            self.mouse = [moveX, moveY]
+            self.table[moveX][moveY].changeType(2, self.mouse_hex)
+
+    def checkMouseWin(self) -> bool:
+        i = self.mouse[0]
+        j = self.mouse[1]
+        if self.table[i - 1][j].type == 1: # Up - Left
+            return True
+        if self.table[i - 1][j - 1].type == 1: # Up - Right
+            return True
+        if self.table[i][j + 1].type == 1: # Right
+            return True
+        if self.table[i + 1][j - 1].type == 1: # Down - Right
+            return True
+        if self.table[i + 1][j].type == 1: # Down - Left
+            return True
+        if self.table[i][j - 1].type == 1: # Left
+            return True
+        return False
+
     def game(self) -> None:
         self.drawMenu()
         clock = pg.time.Clock()
@@ -165,6 +256,7 @@ class TTM:
         pg.event.set_allowed([pg.QUIT, pg.MOUSEBUTTONDOWN])
         screen = 1
         redraw = False
+        difficulty = 1
         while(True):
             for event in pg.event.get():
                 if event.type == pg.QUIT:
@@ -181,21 +273,52 @@ class TTM:
                             if(pg.Rect.collidepoint(self.easy_button.rect, event.pos)):
                                 print('Easy')
                                 screen = 3
+                                difficulty = 1
                                 redraw = True
                             elif(pg.Rect.collidepoint(self.hard_button.rect, event.pos)):
                                 print('Hard')
                                 screen = 3
+                                difficulty = 2
                                 redraw = True
                             elif(pg.Rect.collidepoint(self.pvp_button.rect, event.pos)):
                                 print('PVP')
                                 screen = 3
+                                difficulty = 3
                                 redraw = True
                         elif(screen == 3):
+                            foundHex = False
                             for i in range(len(self.table)):
+                                if(foundHex): break
                                 for j in range(len(self.table[i])):
-                                    if(self.table[i][j].type == 1): continue
-                                    if(pg.Rect.collidepoint(self.table[i][j].rect, event.pos)):
-                                        print(i, j)
+                                    if(self.table[i][j].type == 0):
+                                        if(pg.Rect.collidepoint(self.table[i][j].rect, event.pos)):
+                                                self.table[i][j].changeType(3, self.block_hex)
+                                                foundHex = True
+                                                freeSpaces = self.getFreeSpaces()
+                                                if(len(freeSpaces) == 0):
+                                                    print('Trapper Win')
+                                                    exit()
+                                                else:
+                                                    if(difficulty == 1):
+                                                        self.moveMouseEasy(freeSpaces)
+
+                                                    elif(difficulty == 2):
+                                                        print('Welp')
+                                                        exit()
+                                                    elif(difficulty == 3):
+                                                        print('Welp2')
+                                                        exit()
+                                                    else:
+                                                        print(f'Unknown difficulty {difficulty}')
+                                                        exit()
+
+                                                if(self.checkMouseWin()):
+                                                    print('Mouse Win')
+                                                    exit()
+                                                else:
+                                                    break
+
+
                 if(redraw):
                     if(screen == 1):
                         self.drawMenu()
